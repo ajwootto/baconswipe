@@ -55,14 +55,14 @@ window.BaconSwipe = function(element, options, cellPaddedWidth, cellPaddedHeight
 
 };
 
-BaconSwipe.prototype = {
+CompBaconSwipe.prototype = {
 
   setup: function(cellwidth, cellheight) {
 
     // get and measure amt of slides
     this.slides = this.element.children;
     this.length = this.slides.length;
-
+    this.horizontalMove = false;
     // return immediately if their are less than two slides
     if (this.length < 2) return null;
 
@@ -79,6 +79,7 @@ BaconSwipe.prototype = {
 
     // set sizing attributes
     var index = this.slides.length;
+    console.log(this.width, cellwidth)
     var extrawidth = this.width%cellwidth;
     var cellsperrow = Math.floor(this.width/cellwidth);
     var marginRight = extrawidth/cellsperrow;
@@ -91,9 +92,10 @@ BaconSwipe.prototype = {
 //calculate heights
     var rows = 0;   
     var extraheight = this.height;
+    console.log(extraheight, "height")
     while(extraheight > 0) {
-	rows++;
-	extraheight -= cellheight;
+  rows++;
+  extraheight -= cellheight;
     } 
     extraheight += cellheight;
     var marginBottom = extraheight/(rows - 1);
@@ -106,19 +108,19 @@ BaconSwipe.prototype = {
     }
     else {
         this.hpages = Math.ceil(this.columns/(this.width/cellwidth)); 
-    	this.vpages = Math.ceil(rows/(this.height/cellheight));
+      this.vpages = Math.ceil(rows/(this.height/cellheight));
     }
 //set sizing variables for each cell
     while (index--) {
       var el = this.slides[index];
       el.style.width =  cellwidth+ 'px';
-      el.style.height = cellheight+'px';
+      //el.style.height = cellheight+'px';
       el.style.marginRight = marginRight+'px';
       el.style.marginBottom = marginBottom +'px';
       el.style.display = 'inline-block';
       el.style.verticalAlign = 'top';
     }
-    this.slides[this.slides.length - 1].style.borderRight = 'none';
+   // this.slides[this.slides.length - 1].style.borderRight = 'none';
 
     this.element.style.webkitTransform = 'translate(0, 0)';
     // set start position and force translate to remove initial flickering
@@ -133,7 +135,6 @@ BaconSwipe.prototype = {
   slide: function(index, duration) {
 
     var style = this.element.style;
-
     // fallback to default speed
     if (duration == undefined) {
         duration = this.speed;
@@ -152,11 +153,13 @@ BaconSwipe.prototype = {
 
     }*/
     if(this.individual) {
-    	style.MozTransform = style.webkitTransform = 'translate3d(' + -(index * this.cellhorizontalsize) + 'px,' + -(this.vindex * this.cellverticalsize) + 'px,0)';
-      	style.msTransform = style.OTransform = 'translateX(' + -(index * this.cellhorizontalsize) + 'px)';
+      style.MozTransform = style.webkitTransform = 'translate3d(' + -(index * this.cellhorizontalsize) + 'px,' + -(this.vindex * this.cellverticalsize) + 'px,0)';
+        style.msTransform = style.OTransform = 'translateX(' + -(index * this.cellhorizontalsize) + 'px)';
+        style.webkitBackfaceVisibility = "hidden";
+        style.webkitPerspective = 1000;
     } else { 
-    	style.MozTransform = style.webkitTransform = 'translate3d(' + -(index * this.width) + 'px,' + -(this.vindex * this.height) + 'px,0)';
-      	style.msTransform = style.OTransform = 'translateX(' + -(index * this.width) + 'px)';
+      style.MozTransform = style.webkitTransform = 'translate3d(' + -(index * this.width) + 'px,' + -(this.vindex * this.height) + 'px,0)';
+        style.msTransform = style.OTransform = 'translateX(' + -(index * this.width) + 'px)';
     }
     // set new index to allow for expression arguments
     this.index = index;
@@ -164,25 +167,25 @@ BaconSwipe.prototype = {
   },
 
   vslide: function(vindex, duration) {
-	var style = this.element.style;
+  var style = this.element.style;
         if (duration == undefined)
-		duration = this.speed;
-	style.webkitTransitionDuration = style.MozTransitionDuration = style.msTransitionDuration = style.OTransitionDuration = style.transitionDuration = duration + 'ms';
-	/*if(this.individual) {
-      		style.MozTransform = style.webkitTransform = 'translate3d(0,' + -(vindex * this.cellverticalsize) + 'px,0)';
-     		style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.cellverticalsize) + 'px)';
-    	} else { 
-      		style.MozTransform = style.webkitTransform = 'translate3d(0,' + -(vindex * this.height) + 'px,0)';
-      		style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.height) + 'px)';
-	}*/
-	if(this.individual) {
-      		style.MozTransform = style.webkitTransform = 'translate3d(' + -(this.index * this.cellhorizontalsize) + 'px,' + -(vindex * this.cellverticalsize) + 'px,0)';
-     		style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.cellverticalsize) + 'px)';
-    	} else { 
-      		style.MozTransform = style.webkitTransform = 'translate3d(' + -(this.index * this.width) + 'px,' + -(vindex * this.height) + 'px,0)';
-      		style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.height) + 'px)';
-	}
-	this.vindex = vindex;
+    duration = this.speed;
+  style.webkitTransitionDuration = style.MozTransitionDuration = style.msTransitionDuration = style.OTransitionDuration = style.transitionDuration = duration + 'ms';
+  /*if(this.individual) {
+          style.MozTransform = style.webkitTransform = 'translate3d(0,' + -(vindex * this.cellverticalsize) + 'px,0)';
+        style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.cellverticalsize) + 'px)';
+      } else { 
+          style.MozTransform = style.webkitTransform = 'translate3d(0,' + -(vindex * this.height) + 'px,0)';
+          style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.height) + 'px)';
+  }*/
+  if(this.individual) {
+          style.MozTransform = style.webkitTransform = 'translate3d(' + -(this.index * this.cellhorizontalsize) + 'px,' + -(vindex * this.cellverticalsize) + 'px,0)';
+        style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.cellverticalsize) + 'px)';
+      } else { 
+          style.MozTransform = style.webkitTransform = 'translate3d(' + -(this.index * this.width) + 'px,' + -(vindex * this.height) + 'px,0)';
+          style.msTransform = style.OTransform = 'translateY(' + -(vindex * this.height) + 'px)';
+  }
+  this.vindex = vindex;
   },
 
   getPos: function() {
@@ -259,14 +262,14 @@ BaconSwipe.prototype = {
   onTouchStart: function(e) {
     
     // prevent native scrolling 
-    e.preventDefault();
+   e.preventDefault();
 
     this.start = {
 
       // get touch coordinates for delta calculations in onTouchMove
       pageX: e.touches[0].pageX,
       pageY: e.touches[0].pageY,
-
+      scroll: $("#body").scrollTop(),
       // set initial timestamp of touch sequence
       time: Number( new Date() )
 
@@ -274,7 +277,9 @@ BaconSwipe.prototype = {
 
     // used for testing first onTouchMove event
     this.isScrolling = undefined;
-    
+
+    this.locked = false;
+    this.horizontalMove = false
     // reset deltaX and Y
     this.deltaX = 0;
     this.deltaY = 0;
@@ -283,16 +288,22 @@ BaconSwipe.prototype = {
     this.element.style.MozTransitionDuration = this.element.style.webkitTransitionDuration = 0;
     
     this.matrix = new WebKitCSSMatrix(window.getComputedStyle(this.element).webkitTransform);
-    e.stopPropagation();
+    //e.stopPropagation();
   },
 
   onTouchMove: function(e) {
     // ensure swiping with one touch and not pinching
     if(e.touches.length > 1 || e.scale && e.scale !== 1) return;
-
     this.deltaX = e.touches[0].pageX - this.start.pageX;
     this.deltaY = e.touches[0].pageY - this.start.pageY;
-
+    if(!this.scrollsVertically && Math.abs(this.deltaX) > Math.abs(this.deltaY) && !this.locked){
+      this.horizontalMove = true;
+      this.locked = true;
+    } else if (!this.horizontalMove) {
+      $("#body").scrollTop(this.start.scroll - this.deltaY);
+      this.locked = true;
+    }
+    //$("#body").css('overflowY', 'hidden'); 
     // determine if scrolling test has run - one time test
     if ( typeof this.isScrolling == 'undefined') {
       this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(this.deltaY) );
@@ -300,28 +311,28 @@ BaconSwipe.prototype = {
 
     //increase resistance if first or last slide
     this.deltaX = this.deltaX/
-	( (!this.index && this.deltaX > 0 			//if on first item sliding right
-	  || this.index == this.hpages - 1 && this.deltaX < 0 )	//or on last item sliding left
-	? (Math.abs(this.deltaX)/this.cellhorizontalsize + 1)	//decrease deltaX proportionately
-	: 1 ); 							//otherwise leave it alone
+  ( (!this.index && this.deltaX > 0       //if on first item sliding right
+    || this.index == this.hpages - 1 && this.deltaX < 0 ) //or on last item sliding left
+  ? (Math.abs(this.deltaX)/this.cellhorizontalsize + 1) //decrease deltaX proportionately
+  : 1 );              //otherwise leave it alone
 
     this.deltaY = this.deltaY/
-	( (!this.vindex && this.deltaY > 0			//if on first row sliding down
-	  || this.index == this.vpages - 1 && this.deltaY < 0 )	//or on bottom row sliding up
-	? (Math.abs(this.deltaY)/this.cellverticalsize + 1)
-	: 1);
+  ( (!this.vindex && this.deltaY > 0      //if on first row sliding down
+    || this.index == this.vpages - 1 && this.deltaY < 0 ) //or on bottom row sliding up
+  ? (Math.abs(this.deltaY)/this.cellverticalsize + 1)
+  : 1);
 
     if (this.individual && this.isScrolling && this.scrollsVertically) {
-	this.element.style.webkitTransform = this.matrix.translate(0,this.deltaY);
+  this.element.style.webkitTransform = this.matrix.translate(0,this.deltaY);
     } else if (this.isScrolling && this.scrollsVertically) {
-	this.element.style.webkitTransform = this.matrix.translate(0,this.deltaY);  
-    } else if (this.individual) {
-	this.element.style.webkitTransform = this.matrix.translate(this.deltaX, 0);
-    } else{
-	this.element.style.webkitTransform = this.matrix.translate(this.deltaX,0); 
+  this.element.style.webkitTransform = this.matrix.translate(0,this.deltaY);  
+    } else if (this.individual && this.horizontalMove) {
+  this.element.style.webkitTransform = this.matrix.translate(this.deltaX, 0);
+    } else if (this.horizontalMove){
+  this.element.style.webkitTransform = this.matrix.translate(this.deltaX,0); 
     } 
     
-    e.stopPropagation();
+    //e.stopPropagation();
 
   },
 
@@ -329,11 +340,10 @@ BaconSwipe.prototype = {
 
     // determine if slide attempt triggers next/prev slide
     var isValidSlide; 
-
     // determine if slide attempt is past start and end
     var isPastBounds; 
     var indexchange = 0;
-
+    this.locked = false;
     // if not scrolling vertically
     if (!this.isScrolling || !this.scrollsVertically) {
       isValidSlide = (Math.abs(this.deltaX) > 20) || (Math.abs(this.deltaX) > this.cellhorizontalsize/2);
@@ -368,7 +378,7 @@ BaconSwipe.prototype = {
       this.vslide( this.vindex + (isValidSlide && !isPastBounds ? (this.deltaY < 0 ? 1 : -1) : 0 ), this.speed );
     }
     
-    e.stopPropagation();
+    //e.stopPropagation();
   }
 
 };
