@@ -335,40 +335,37 @@ BaconSwipe.prototype = {
     var indexchange = 0;
 
     // if not scrolling vertically
-    if (!this.isScrolling) {
+    if (!this.isScrolling || !this.scrollsVertically) {
       isValidSlide = (Math.abs(this.deltaX) > 20) || (Math.abs(this.deltaX) > this.cellhorizontalsize/2);
       isPastBounds = (!this.index && this.deltaX > 0) || (this.index == this.hpages - 1 && this.deltaX < 0);
       if (isValidSlide && !isPastBounds){
-	if (!this.individual) {
-		indexchange = (this.deltaX < 0 ? 1: -1);
-	}
-	else {
-		indexchange = -Math.floor(this.deltaX/this.cellhorizontalsize);
-		if ((this.index + indexchange) > this.hpages - 1)
-			indexchange = this.hpages - 1 - this.index;
-		else if (this.index + indexchange < 0)
-			indexchange = -this.index;
-	}
+        if (!this.individual) {
+          indexchange = (this.deltaX < 0 ? 1: -1);
+        }
+        else if (this.horizontalMove){
+          indexchange = (this.deltaX < 0) ? -Math.floor(this.deltaX/this.cellhorizontalsize) : -Math.ceil(this.deltaX/this.cellhorizontalsize)
+          if ((this.index + indexchange) > this.hpages - 1)
+            indexchange = this.hpages - 1 - this.index;
+          else if (this.index + indexchange < 0)
+            indexchange = -this.index;
+        }
       }
       // call slide function with slide end value based on isValidSlide and isPastBounds tests
       this.slide( this.index + indexchange, this.speed );
-    }
-    else if (this.isScrolling && this.scrollsVertically) {
-	isValidSlide = (Math.abs(this.deltaY) > 20) || (Math.abs(this.deltaY) > this.cellverticalsize/2);
-	isPastBounds = (!this.vindex && this.deltaY > 0) || (this.vindex == this.vpages -1 && this.deltaY < 0);
-
-	if (!this.individual) {
-		indexchange = (this.deltaY < 0 ? 1: -1);
-	}
-	else {
-		indexchange = -Math.floor(this.deltaX/this.cellverticalsize);
-		if ((this.vindex + indexchange) > this.vpages - 1)
-			indexchange = this.vpages - 1 - this.vindex;
-		else if (this.vindex + indexchange < 0)
-			indexchange = -this.vindex;
-	}
-      // call slide function with slide end value based on isValidSlide and isPastBounds tests
-	this.vslide( this.vindex + (isValidSlide && !isPastBounds ? (this.deltaY < 0 ? 1 : -1) : 0 ), this.speed );
+    } else if (this.isScrolling && this.scrollsVertically) {
+        isValidSlide = (Math.abs(this.deltaY) > 20) || (Math.abs(this.deltaY) > this.cellverticalsize/2);
+        isPastBounds = (!this.vindex && this.deltaY > 0) || (this.vindex == this.vpages -1 && this.deltaY < 0);
+        if (!this.individual) {
+          indexchange = (this.deltaY < 0 ? 1: -1);
+        } else {
+          indexchange = -Math.floor(this.deltaX/this.cellverticalsize);
+          if ((this.vindex + indexchange) > this.vpages - 1)
+            indexchange = this.vpages - 1 - this.vindex;
+          else if (this.vindex + indexchange < 0)
+            indexchange = -this.vindex;
+        }
+          // call slide function with slide end value based on isValidSlide and isPastBounds tests
+      this.vslide( this.vindex + (isValidSlide && !isPastBounds ? (this.deltaY < 0 ? 1 : -1) : 0 ), this.speed );
     }
     
     e.stopPropagation();
